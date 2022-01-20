@@ -41,23 +41,7 @@ class RegistrationSerializer(serializers.Serializer):
     def create(self):#для создан пользователя
         user = User.objects.create_user(**self.validated_data)
         user.create_activation_code()
-        user.send_activation_mail()
-
-
-class ActivationSerializer(serializers.Serializer):
-    code = serializers.CharField(max_length=6, min_length=6, required=True)
-
-    def validate_code(self, code):
-        if not User.objects.filter(activation_code=code).exists():
-            raise serializers.ValidationError('Пользователь не найден')
-        return code
-
-    def activate(self):
-        code = self.validated_data.get('code')
-        user = User.objects.get(activation_code=code)
-        user.is_active = True
-        user.activation_code = ''
-        user.save()
+        user.send_activation_mail('register')
 
 
 class LoginSerializer(serializers.Serializer):
@@ -108,19 +92,19 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=20)
+    email = serializers.CharField(max_length=20)
 
     def validate_email(self, email):
-        phone = normalize_email(email)
+        email = normalize_email(email)
         if not User.objects.filter(email=email).exists():
             raise serializers.ValidationError("Пользовтеля с этим email'ом не существует")
         return email
 
     def send_code(self):
         email = self.validated_data.get('email')
-        user = User.objects.filter(email=email)
+        user = User.objects.get(email=email)
         user.create_activation_code()
-        user.send_activation_mail()
+        user.send_activation_mail(action='forgot')
 
 
 class ForgotPasswordCompleteSerializer(serializers.Serializer):

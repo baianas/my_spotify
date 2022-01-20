@@ -54,7 +54,7 @@ class User(AbstractBaseUser):
 
     def send_activation_mail(self, action):
         if action == 'register':
-            message = f'http:/localhost:8000/account/activate/{self.activation_code}/'
+            message = f'http:/127.0.0.1:8000/api/v1/activate/{self.activation_code}/'
         else:
             message = f'Ваш код подтверждения: {self.activation_code}'
         send_mail(

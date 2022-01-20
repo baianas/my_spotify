@@ -5,7 +5,7 @@ from account.views import RegistrationView, ActivationView, LoginView, LogoutVie
 
 urlpatterns = [
     path('register/', RegistrationView.as_view()),
-    path('activate/', ActivationView.as_view()),
+    path('activate/<str:activation_code>/', ActivationView.as_view()),
     path('login/', LoginView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('change_password/', ChangePasswordView.as_view()),
